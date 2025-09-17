@@ -349,7 +349,7 @@ const LoginPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 p-4 md:p-6">
           <div className="flex justify-center mb-2 md:mb-4">
-            <img src={runLogo} alt="Redeemer's University Logo" className="h-16 w-16 md:h-20 md:w-20 drop-shadow-lg" />
+            <img src={runLogo} alt="Redeemer's University Logo" className="h-16 w-32 md:h-20 md:w-40 object-contain drop-shadow-lg" />
           </div>
           <CardTitle className="text-xl md:text-2xl font-bold text-center">
             {isSignUp ? "Create Account" : "DPO Vendor Compliance"}
