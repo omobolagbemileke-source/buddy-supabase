@@ -10,9 +10,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from '@/hooks/useAuth';
 import type { Submission } from "@/hooks/useSubmissions";
 
 const AdminReview = () => {
+  const { hasPermission } = useAuth();
   const navigate = useNavigate();
   const { vendorSlug } = useParams();
   const [decision, setDecision] = useState("");
@@ -300,77 +302,94 @@ const AdminReview = () => {
 
           {/* Review Panel */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Review Decision</CardTitle>
-                <CardDescription>Make your compliance decision</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <Label>Decision *</Label>
-                  <RadioGroup value={decision} onValueChange={setDecision}>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="approved" id="approved" />
-                      <Label htmlFor="approved" className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-success" />
-                        Approve
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="rejected" id="rejected" />
-                      <Label htmlFor="rejected" className="flex items-center gap-2">
-                        <XCircle className="h-4 w-4 text-destructive" />
-                        Reject
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="conditional" id="conditional" />
-                      <Label htmlFor="conditional" className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-warning" />
-                        Approve with Conditions
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+            {/* Decision Card - Only for Super Admins */}
+            {hasPermission('approve_forms') ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Review Decision</CardTitle>
+                  <CardDescription>Make your compliance decision</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <Label>Decision *</Label>
+                    <RadioGroup value={decision} onValueChange={setDecision}>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="approved" id="approved" />
+                        <Label htmlFor="approved" className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-success" />
+                          Approve
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="rejected" id="rejected" />
+                        <Label htmlFor="rejected" className="flex items-center gap-2">
+                          <XCircle className="h-4 w-4 text-destructive" />
+                          Reject
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="conditional" id="conditional" />
+                        <Label htmlFor="conditional" className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-warning" />
+                          Approve with Conditions
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
 
-                <div className="space-y-3">
-                  <Label>Risk Level *</Label>
-                  <RadioGroup value={riskLevel} onValueChange={setRiskLevel}>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="low" id="low" />
-                      <Label htmlFor="low">Low Risk</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="medium" id="medium" />
-                      <Label htmlFor="medium">Medium Risk</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="high" id="high" />
-                      <Label htmlFor="high">High Risk</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                  <div className="space-y-3">
+                    <Label>Risk Level *</Label>
+                    <RadioGroup value={riskLevel} onValueChange={setRiskLevel}>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="low" id="low" />
+                        <Label htmlFor="low">Low Risk</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="medium" id="medium" />
+                        <Label htmlFor="medium">Medium Risk</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="high" id="high" />
+                        <Label htmlFor="high">High Risk</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="comments">Comments</Label>
-                  <Textarea
-                    id="comments"
-                    value={comments}
-                    onChange={(e) => setComments(e.target.value)}
-                    placeholder="Add any comments or conditions for this decision..."
-                    rows={4}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="comments">Comments</Label>
+                    <Textarea
+                      id="comments"
+                      value={comments}
+                      onChange={(e) => setComments(e.target.value)}
+                      placeholder="Add any comments or conditions for this decision..."
+                      rows={4}
+                    />
+                  </div>
 
-                <Button 
-                  onClick={handleDecision} 
-                  className="w-full bg-gradient-primary"
-                  disabled={!decision || !riskLevel || submitting}
-                >
-                  {submitting ? "Submitting..." : "Submit Decision"}
-                </Button>
-              </CardContent>
-            </Card>
+                  <Button 
+                    onClick={handleDecision} 
+                    className="w-full bg-gradient-primary"
+                    disabled={!decision || !riskLevel || submitting}
+                  >
+                    {submitting ? "Submitting..." : "Submit Decision"}
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>View Only Access</CardTitle>
+                  <CardDescription>You have view-only permissions for this submission</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4" />
+                    <p>You can view this submission but cannot approve or reject it.</p>
+                    <p className="text-sm mt-2">Contact a super administrator for approval actions.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Summary */}
             <Card>

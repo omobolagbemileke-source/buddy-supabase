@@ -21,12 +21,14 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from '@/integrations/supabase/client';
 import { useSubmissions } from '@/hooks/useSubmissions';
+import { useAuth } from '@/hooks/useAuth';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const { hasPermission, user } = useAuth();
   const { submissions, loading, error } = useSubmissions();
 
   const handleLogout = async () => {
@@ -112,35 +114,39 @@ const AdminDashboard = () => {
               <p className="text-muted-foreground mt-1 text-sm sm:text-base">Review and manage vendor compliance submissions</p>
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2"
-                onClick={() => navigate('/admin/users')}
-              >
-                <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Users</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2"
-                onClick={() => {
-                  const csvContent = "data:text/csv;charset=utf-8," 
-                    + "Vendor,Service,Status,Risk Level,Submitted,Reviewed\n"
-                    + submissions.map(s => 
-                        `"${s.vendor_name}","${s.service_name}","${s.status}","${s.risk_level}","${new Date(s.created_at).toLocaleDateString()}","${s.reviewed_at ? new Date(s.reviewed_at).toLocaleDateString() : 'N/A'}"`
-                      ).join("\n");
-                  const encodedUri = encodeURI(csvContent);
-                  const link = document.createElement("a");
-                  link.setAttribute("href", encodedUri);
-                  link.setAttribute("download", `vendor_compliance_export_${new Date().toISOString().split('T')[0]}.csv`);
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Export</span>
-              </Button>
+              {hasPermission('manage_users') && (
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={() => navigate('/admin/users')}
+                >
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Users</span>
+                </Button>
+              )}
+              {hasPermission('download_data') && (
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    const csvContent = "data:text/csv;charset=utf-8," 
+                      + "Vendor,Service,Status,Risk Level,Submitted,Reviewed\n"
+                      + submissions.map(s => 
+                          `"${s.vendor_name}","${s.service_name}","${s.status}","${s.risk_level}","${new Date(s.created_at).toLocaleDateString()}","${s.reviewed_at ? new Date(s.reviewed_at).toLocaleDateString() : 'N/A'}"`
+                        ).join("\n");
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", `vendor_compliance_export_${new Date().toISOString().split('T')[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">Export</span>
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 className="sm:hidden"

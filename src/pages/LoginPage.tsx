@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, AlertCircle, User, Phone, Building } from "lucide-react";
 import { supabase } from '../lib/superbase';
-import cdpoLogo from "@/assets/cdpo-logo-nobg.png";
+import runLogo from "@/assets/run-university-logo.png";
 import { getAuthCallbackUrl } from "@/lib/auth-utils";
 
 const LoginPage = () => {
@@ -116,7 +116,7 @@ const LoginPage = () => {
         try {
           const newProfile = await createUserProfile(userId, userEmail);
           // Redirect based on new profile role
-          if (newProfile?.role === 'superadmin') {
+          if (newProfile?.role === 'superadmin' || newProfile?.role === 'limited_admin') {
             navigate('/admin/dashboard');
           } else {
             navigate('/vendor/dashboard');
@@ -129,7 +129,7 @@ const LoginPage = () => {
       }
 
       // Redirect based on existing profile role
-      if (profile?.role === 'superadmin') {
+      if (profile?.role === 'superadmin' || profile?.role === 'limited_admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/vendor/dashboard');
@@ -349,7 +349,7 @@ const LoginPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 p-4 md:p-6">
           <div className="flex justify-center mb-2 md:mb-4">
-            <img src={cdpoLogo} alt="CDPO Logo" className="h-16 w-16 md:h-20 md:w-20 drop-shadow-lg" />
+            <img src={runLogo} alt="Redeemer's University Logo" className="h-16 w-16 md:h-20 md:w-20 drop-shadow-lg" />
           </div>
           <CardTitle className="text-xl md:text-2xl font-bold text-center">
             {isSignUp ? "Create Account" : "DPO Vendor Compliance"}

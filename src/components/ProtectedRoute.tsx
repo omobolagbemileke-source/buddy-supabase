@@ -4,7 +4,7 @@ import { supabase } from '../lib/superbase';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'vendor' | 'superadmin';
+  requiredRole?: 'vendor' | 'superadmin' | 'limited_admin';
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
@@ -37,7 +37,7 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
                 navigate('/login');
                 return;
               }
-            } else if (error || profile?.role !== requiredRole) {
+            } else if (error || (requiredRole !== 'vendor' && !(profile?.role === 'superadmin' || profile?.role === 'limited_admin'))) {
               navigate('/login');
               return;
             }
