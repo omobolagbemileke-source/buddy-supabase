@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, AlertCircle, User, Phone, Building } from "lucide-react";
 import { supabase } from '../lib/superbase';
 import cdpoLogo from "@/assets/cdpo-logo-nobg.png";
+import { getAuthCallbackUrl } from "@/lib/auth-utils";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -263,7 +264,7 @@ const LoginPage = () => {
             created_at: new Date().toISOString(),
           },
           // Redirect to dashboard after email confirmation
-          emailRedirectTo: `https://dpovendor.vercel.app/auth/callback`,
+          emailRedirectTo: getAuthCallbackUrl(),
         }
       });
 
@@ -303,7 +304,7 @@ const LoginPage = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://dpovendor.vercel.app/auth/callback`,
+          redirectTo: getAuthCallbackUrl(),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
