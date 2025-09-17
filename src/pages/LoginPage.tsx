@@ -263,7 +263,7 @@ const LoginPage = () => {
             created_at: new Date().toISOString(),
           },
           // Redirect to dashboard after email confirmation
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `https://dpovendor.vercel.app/auth/callback`,
         }
       });
 
@@ -303,7 +303,7 @@ const LoginPage = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `https://dpovendor.vercel.app/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
