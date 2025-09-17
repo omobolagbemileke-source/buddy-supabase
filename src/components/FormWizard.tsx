@@ -131,14 +131,16 @@ const FormWizard = ({ sections, onSubmit, onSave }: FormWizardProps) => {
                     Previous
                   </Button>
                   
-                  <Button
-                    variant="outline"
-                    onClick={handleSave}
-                    className="border-2 border-success/30 text-success hover:bg-success/10 hover:shadow-lg transition-all duration-300"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save & Continue Later
-                  </Button>
+                  {!isLastStep && (
+                    <Button
+                      variant="outline"
+                      onClick={handleSave}
+                      className="border-2 border-success/30 text-success hover:bg-success/10 hover:shadow-lg transition-all duration-300"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save & Continue Later
+                    </Button>
+                  )}
                 </div>
 
                 <div className="flex gap-3">
